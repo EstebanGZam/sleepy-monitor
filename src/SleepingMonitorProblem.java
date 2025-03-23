@@ -5,7 +5,8 @@ import model.Student;
 // Main class
 public class SleepingMonitorProblem {
     public static void main(String[] args) {
-        int numberOfStudents = 10;
+        int numberOfStudents = 6;
+        int maxHelpRequests = 2;
         MonitorOffice office = new MonitorOffice();
         
         // Create and start the monitor thread
@@ -15,7 +16,7 @@ public class SleepingMonitorProblem {
         
         // Create and start student threads
         for (int i = 0; i < numberOfStudents; i++) {
-            Student student = new Student(i + 1, office);
+            Student student = new Student(i + 1, office, maxHelpRequests);
             Thread studentThread = new Thread(student);
             studentThread.start();
         }

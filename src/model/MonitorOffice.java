@@ -48,20 +48,18 @@ public class MonitorOffice {
                 studentsWaiting.release(); // Signal monitor that a student is waiting
 
                 // Wait until it's this student's turn
-                while (true) {
-                    synchronized (waitingQueue) {
+                synchronized (this) {
+                    while (true) {
                         if (!waitingQueue.isEmpty() && waitingQueue.peek() == studentId) {
                             monitorAvailable.acquire();
                             waitingQueue.poll();
-                            break;
+                            corridorChairs.release();
+                            System.out.println("Student " + studentId + " is now getting help from the monitor.");
+                            return true;
                         }
+                        this.wait(100); // Small delay to prevent CPU hogging
                     }
-                    Thread.sleep(100); // Small delay to prevent CPU hogging
                 }
-
-                corridorChairs.release(); // Free up the corridor chair
-                System.out.println("Student " + studentId + " is now getting help from the monitor.");
-                return true;
             } else {
                 // Monitor was available directly
                 System.out.println("Monitor is now helping Student " + studentId + ".");
