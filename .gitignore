@@ -1,6 +1,12 @@
 # Created by https://www.toptal.com/developers/gitignore/api/java,visualstudiocode,linux
 # Edit at https://www.toptal.com/developers/gitignore?templates=java,visualstudiocode,linux
 
+.idea
+.idea/*
+*.iml
+out
+.out/*
+
 ### Java ###
 # Compiled class file
 *.class

@@ -1,30 +1,30 @@
-# 🛋️ El Monitor Dormilón
+# 🛋️ The Sleepy Monitor
 
-## Integrantes:
+## Team-workers:
 - Esteban Gaviria Zambrano - A00396019
 - Miguel González - A00395687
 - Santiago Valencia García - A00395902
 
 ---
 
-Este proyecto simula un problema clásico de sincronización de hilos en Java. Un monitor (asistente) ayuda a estudiantes con sus tareas de programación en una oficina con espacio limitado. Los estudiantes esperan en un corredor con 3 sillas si el monitor está ocupado. Si no hay sillas disponibles, se van y regresan más tarde.
+This project simulates a classic Java thread synchronization problem. A monitor (assistant) helps students with their programming tasks in an office with limited space. Students wait in a corridor with 3 chairs if the monitor is busy. If no chairs are available, they leave and return later.
 
-## Lógica del programa
+## Program logic
 
-- **Monitor**: Atiende a los estudiantes en orden de llegada. Si no hay estudiantes, duerme.
-- **Estudiantes**: Alternan entre programar y buscar ayuda del monitor. Si el monitor está ocupado, esperan en el corredor o se van si no hay sillas disponibles.
-- **Sincronización**: Se usan semáforos para controlar el acceso al monitor y las sillas del corredor.
+- **Monitor**: Serves students on a first-come, first-served basis. If there are no students, sleeps.
+- **Students**: Alternate between scheduling and seeking help from the monitor. If the monitor is busy, they wait in the hallway or leave if no chairs are available.
+- **Synchronization**: Semaphores are used to control access to monitor and corridor chairs.
 
-## Implementación
+## Implementation
 
-- **Clases principales**:
-  - `SleepingMonitorProblem`: Inicia la simulación.
-  - `Student`: Representa a un estudiante.
-  - `Monitor`: Representa al asistente.
-  - `MonitorOffice`: Gestiona los recursos compartidos.
+- **Main Classes**:
+  - `SleepingMonitorProblem`: Start the simulation.
+  - `Student`: Represents a student. Student Thread alternates between working and seeking help from the monitor. If the monitor is busy, the student waits in the corridor. If there are no chairs available, the student leaves.
+  - `Monitor`: Represents the monitor. The monitor Thread just check if there are students in the queue and if so, it serves them. If there are no students, the monitor goes to sleep.
+  - `MonitorOffice`: Handle the shared resources. It contains the monitor and the corridor chairs. It also contains the semaphores to control access to the monitor and the corridor chairs. It also contains the queue of students waiting to be served. The methods that expose are:
+      - `requestHelp(int id)`: A student requests help from the monitor.
+      - `finishHelp()`: The monitor finishes helping a student.
+      - `checkWaitingStudents()`: The monitor checks if there are students waiting to be served.
 
-- **Tecnologías**: Java, hilos (`Thread`) y semáforos (`Semaphore`).
 
-## Condición de parada
-
-Cada estudiante solicita ayuda un número determinado de veces (`maxHelpRequests`). El programa termina cuando todos los estudiantes han recibido ayuda.
+- **Technologies**: Java, `Thread` and `Semaphores`.
