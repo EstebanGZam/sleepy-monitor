@@ -25,12 +25,8 @@ public class MonitorOffice {
             // Check if the monitor is sleeping
             if (isMonitorSleeping) {
                 System.out.println("Student " + studentId + " found the monitor sleeping and wakes them up.");
+                // Student wakes up monitor
                 isMonitorSleeping = false;
-
-                // Student wakes up monitor and gets help directly
-                monitorAvailable.acquire();
-                System.out.println("Monitor is now helping Student " + studentId + ".");
-                return true;
             }
             // Monitor is busy, try to get a chair
             else if (!monitorAvailable.tryAcquire()) {
@@ -60,11 +56,13 @@ public class MonitorOffice {
                         this.wait(100); // Small delay to prevent CPU hogging
                     }
                 }
-            } else {
-                // Monitor was available directly
-                System.out.println("Monitor is now helping Student " + studentId + ".");
-                return true;
             }
+
+            // Monitor is free, get help directly
+            monitorAvailable.acquire();
+            System.out.println("Monitor is now helping Student " + studentId + ".");
+            return true;
+
         } catch (InterruptedException e) {
             e.printStackTrace();
             return false;
@@ -73,12 +71,12 @@ public class MonitorOffice {
 
     // Called by students after receiving help
     public void finishHelp(int studentId) {
-        System.out.println("Student " + studentId + " finished receiving help and leaves.");
+        System.out.println("Student " + studentId + " finished receiving help and leaves the office.");
         monitorAvailable.release();
     }
 
     // Used by monitor to check if there are waiting students
-    public boolean hasWaitingStudents() {
+    private boolean hasWaitingStudents() {
         synchronized (waitingQueue) {
             return !waitingQueue.isEmpty();
         }
@@ -86,23 +84,19 @@ public class MonitorOffice {
 
     // Used by monitor to check if students waiting and take next one
     public void checkWaitingStudents() {
-        try {
-            if (hasWaitingStudents()) {
-                // Wait for the signal that there's a student
-                studentsWaiting.acquire();
+        if (hasWaitingStudents()) {
+            // Wait for the signal that there's a student
+            studentsWaiting.tryAcquire();
 
-                // The student will acquire the monitorAvailable semaphore
-                // No need to do anything here as the student manages the queue
+            // The student will acquire the monitorAvailable semaphore
+            // No need to do anything here as the student manages the queue
+        } else if (monitorAvailable.availablePermits() > 0) {
+            if (isMonitorSleeping) {
+                System.out.println("Monitor is sleeping.");
             } else {
-                if (isMonitorSleeping) {
-                    System.out.println("Monitor is sleeping.");
-                } else {
-                    System.out.println("No students waiting. Monitor goes to sleep.");
-                    isMonitorSleeping = true;
-                }
+                System.out.println("No students waiting. Monitor goes to sleep.");
+                isMonitorSleeping = true;
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 }
